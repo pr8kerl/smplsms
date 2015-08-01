@@ -2,7 +2,7 @@ GOROOT := /usr/local/go
 GOPATH := $(shell pwd)
 GOBIN  := $(GOPATH)/bin
 PATH   := $(GOROOT)/bin:$(PATH)
-DEPS   := github.com/gin-gonic/gin github.com/tarm/serial
+DEPS   := github.com/gin-gonic/gin github.com/tarm/serial github.com/mattn/go-isatty
 
 all: server
 

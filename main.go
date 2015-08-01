@@ -17,7 +17,7 @@ type SMS struct {
 
 var (
 	modem    *GSMModem
-	commport string = "COM10"
+	commport string = "COM14"
 	baud     int    = 9600
 	devid    string = "smsModem"
 	msgs     chan SMS
@@ -40,6 +40,7 @@ func main() {
 	}
 
 	// Creates a router without any middleware by default
+	//gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 
 	// Global middlewares
