@@ -23,7 +23,10 @@ var (
 func init() {
 
 	// setup config
-	InitialiseConfig(cfgfile)
+	err := InitialiseConfig(cfgfile)
+	if err != nil {
+		fmt.Printf("error reading config: %s\r\n", err)
+	}
 	bindaddress = fmt.Sprintf("%s:%d", config.BindAddress, config.BindPort)
 	modem = NewModem(config.CommPort, config.Baud, "Modem")
 	msgs = make(chan SMS, config.BufferSize)
@@ -35,6 +38,8 @@ func main() {
 	err := modem.Connect()
 	if err != nil {
 		fmt.Printf("InitModem: error connecting to %s, %s\r\n", modem.DeviceId, err)
+		fmt.Printf("commport: %s\r\n", config.CommPort)
+		fmt.Printf("baud: %d\r\n", config.Baud)
 		os.Exit(1)
 	}
 

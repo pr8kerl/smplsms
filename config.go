@@ -15,7 +15,7 @@ type Config struct {
 	BindPort    string `json:"port"`
 	CommPort    string `json:"commport"`
 	Baud        int    `json:"baud"`
-	Debug       string `json:"debug"`
+	Debug       bool   `json:"debug"`
 	BufferSize  int    `json:"buffer"`
 }
 
