@@ -12,7 +12,7 @@ var (
 
 type Config struct {
 	BindAddress string `json:"bindaddress"`
-	BindPort    string `json:"port"`
+	BindPort    int    `json:"port"`
 	CommPort    string `json:"commport"`
 	Baud        int    `json:"baud"`
 	Debug       bool   `json:"debug"`
