@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -30,6 +31,7 @@ func init() {
 	bindaddress = fmt.Sprintf("%s:%d", config.BindAddress, config.BindPort)
 	modem = NewModem(config.CommPort, config.Baud, "Modem")
 	msgs = make(chan SMS, config.BufferSize)
+	log.SetFlags(log.LstdFlags)
 
 }
 
@@ -37,10 +39,14 @@ func main() {
 
 	err := modem.Connect()
 	if err != nil {
-		fmt.Printf("InitModem: error connecting to %s, %s\r\n", modem.DeviceId, err)
-		fmt.Printf("commport: %s\r\n", config.CommPort)
-		fmt.Printf("baud: %d\r\n", config.Baud)
+		log.Printf("ConnectModem: error connecting to %s, %s\r\n", modem.DeviceId, err)
+		log.Printf("commport: %s\r\n", config.CommPort)
+		log.Printf("baud: %d\r\n", config.Baud)
 		os.Exit(1)
+	}
+	err = modem.InitialiseModem()
+	if err != nil {
+		log.Printf("InitModem: error initialising %s, %s\r\n", modem.DeviceId, err)
 	}
 
 	// Creates a router without any middleware by default
@@ -93,15 +99,15 @@ func worker() {
 
 	for {
 		m := <-msgs
-		fmt.Println("msg received: ", m)
+		log.Printf("msg received: %s\r\n", m)
 		time.Sleep(time.Second)
 
 		err := modem.SendSMS(m.Mobile, m.Message)
 		if err != nil {
-			fmt.Printf("msg error: %s\r\n", err)
-			fmt.Printf("msg failure for msg: %s\r\n", m)
+			log.Printf("msg error: %s\r\n", err)
+			log.Printf("msg failure for msg: %s\r\n", m)
 		} else {
-			fmt.Printf("msg success: %s\r\n", m)
+			log.Printf("msg success: %s\r\n", m)
 		}
 
 	}

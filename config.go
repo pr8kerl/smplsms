@@ -11,12 +11,13 @@ var (
 )
 
 type Config struct {
-	BindAddress string `json:"bindaddress"`
-	BindPort    int    `json:"port"`
-	CommPort    string `json:"commport"`
-	Baud        int    `json:"baud"`
-	Debug       bool   `json:"debug"`
-	BufferSize  int    `json:"buffer"`
+	BindAddress     string `json:"bindaddress"`
+	BindPort        int    `json:"port"`
+	CommPort        string `json:"commport"`
+	Baud            int    `json:"baud"`
+	Debug           bool   `json:"debug"`
+	BufferSize      int    `json:"buffer"`
+	ModemInitString string `json:"initstring"`
 }
 
 func InitialiseConfig(cfg string) (err error) {
