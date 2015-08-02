@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"github.com/tarm/serial"
 	"log"
 	"strings"
@@ -25,15 +26,17 @@ func (m *GSMModem) Connect() (err error) {
 	return err
 }
 
-func (m *GSMModem) SendCommand(command string, waitForOk bool) string {
+func (m *GSMModem) SendCommand(command string, waitForOk bool) error {
 	log.Println("--- SendCommand: ", command)
 	var status string = ""
+	var e error
 	m.Port.Flush()
 	_, err := m.Port.Write([]byte(command))
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("error writing to port: %s", err)
+		return err
 	}
-	buf := make([]byte, 32)
+	buf := make([]byte, 64)
 	var loop int = 1
 	if waitForOk {
 		loop = 10
@@ -43,22 +46,25 @@ func (m *GSMModem) SendCommand(command string, waitForOk bool) string {
 		n, _ := m.Port.Read(buf)
 		if n > 0 {
 			status = string(buf[:n])
-			log.Printf("SendCommand: rcvd %d bytes: %s\n", n, status)
-			if strings.HasSuffix(status, "OK\r\n") || strings.HasSuffix(status, "ERROR\r\n") {
+			log.Printf("SendCommand: rcvd %d bytes: %s\r\n", n, status)
+			if strings.HasPrefix(status, "OK") {
+				break
+			} else if strings.HasPrefix(status, "ERR") {
+				e = errors.New(status)
 				break
 			}
 		}
 	}
-	return status
+	return e
 }
 
-func (m *GSMModem) SendSMS(mobile string, message string) string {
+func (m *GSMModem) SendSMS(mobile string, message string) error {
 	log.Println("--- SendSMS ", mobile, message)
 
 	// Put Modem in SMS Text Mode
-	m.SendCommand("AT+CMGF=1\r", false)
+	m.SendCommand("AT+CMGF=1\r\n", false)
 
-	m.SendCommand("AT+CMGS=\""+mobile+"\"\r", false)
+	m.SendCommand("AT+CMGS=\""+mobile+"\"\r\n", false)
 
 	// EOM CTRL-Z = 26
 	return m.SendCommand(message+string(26), true)

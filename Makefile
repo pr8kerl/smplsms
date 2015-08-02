@@ -9,7 +9,7 @@ all: server
 update: $(DEPS)
 	GOPATH=$(GOPATH) go get -u $^
 
-server: main.go modem.go
+server: main.go modem.go config.go
     # always format code
 		GOPATH=$(GOPATH) go fmt $^
     # binary

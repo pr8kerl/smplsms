@@ -1,0 +1,9 @@
+{
+				"debug": false,
+				"bindaddress": "0.0.0.0",
+				"port": 8951,
+				"commport": "COM14",
+				"baud": "9600",
+				"buffer": 10
+}
+

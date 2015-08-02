@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -16,18 +15,18 @@ type SMS struct {
 }
 
 var (
-	modem    *GSMModem
-	commport string = "COM14"
-	baud     int    = 9600
-	devid    string = "smsModem"
-	msgs     chan SMS
-	bufferSz int = 10
+	modem       *GSMModem
+	msgs        chan SMS
+	bindaddress string
 )
 
 func init() {
 
-	modem = NewModem(commport, baud, devid)
-	msgs = make(chan SMS, bufferSz)
+	// setup config
+	InitialiseConfig(cfgfile)
+	bindaddress = fmt.Sprintf("%s:%d", config.BindAddress, config.BindPort)
+	modem = NewModem(config.CommPort, config.Baud, "Modem")
+	msgs = make(chan SMS, config.BufferSize)
 
 }
 
@@ -35,7 +34,7 @@ func main() {
 
 	err := modem.Connect()
 	if err != nil {
-		fmt.Println("InitWorker: error connecting", modem.DeviceId, err)
+		fmt.Printf("InitModem: error connecting to %s, %s\r\n", modem.DeviceId, err)
 		os.Exit(1)
 	}
 
@@ -56,7 +55,7 @@ func main() {
 
 	go worker()
 	// Listen and server on 0.0.0.0:8951
-	r.Run(":8951")
+	r.Run(bindaddress)
 
 }
 
@@ -92,11 +91,12 @@ func worker() {
 		fmt.Println("msg received: ", m)
 		time.Sleep(time.Second)
 
-		status := modem.SendSMS(m.Mobile, m.Message)
-		if strings.HasSuffix(status, "OK\r\n") {
-			fmt.Println("msg success: ", m)
-		} else if strings.HasSuffix(status, "ERROR\r\n") {
-			fmt.Println("msg failure: ", m)
+		err := modem.SendSMS(m.Mobile, m.Message)
+		if err != nil {
+			fmt.Printf("msg error: %s\r\n", err)
+			fmt.Printf("msg failure for msg: %s\r\n", m)
+		} else {
+			fmt.Printf("msg success: %s\r\n", m)
 		}
 
 	}
