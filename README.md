@@ -3,6 +3,7 @@
 A simple SMS server for sending text SMS messages using an SMS modem.
 
 The modem code is gratefully stolen from [haxpax/gosms](https://github.com/haxpax/gosms), and therefore this repo retains the same license (GPLv2).
+PDU code also gratefully stolen from [ivahaev/gosms](https://github.com/ivahaev/gosms). :)
 
 Post messages as json 
 ```

@@ -6,7 +6,7 @@ DEPS   := github.com/gin-gonic/gin github.com/tarm/serial github.com/mattn/go-is
 
 all: server
 
-update: $(DEPS)
+deps: $(DEPS)
 	GOPATH=$(GOPATH) go get -u $^
 
 server: main.go modem.go config.go

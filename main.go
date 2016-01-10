@@ -102,10 +102,10 @@ func worker() {
 		log.Printf("msg received: %s\r\n", m)
 		time.Sleep(time.Second)
 
-		err := modem.SendSMS(m.Mobile, m.Message)
+		resp, err := modem.SendSMS(m.Mobile, m.Message)
 		if err != nil {
 			log.Printf("msg error: %s\r\n", err)
-			log.Printf("msg failure for msg: %s\r\n", m)
+			log.Printf("msg modem response: %s\r\n", resp)
 		} else {
 			log.Printf("msg success: %s\r\n", m)
 		}
