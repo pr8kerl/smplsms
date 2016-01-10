@@ -16,10 +16,14 @@ server: main.go modem.go config.go
 		GOPATH=$(GOPATH) go build -o $@ -v $^
 		touch $@
 
-windows:
-	  gox -os="windows"
+windows: main.go modem.go config.go
+    # always format code
+		GOPATH=$(GOPATH) go fmt $^
+    # binary
+		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build -o server.exe -v $^
+		touch server.exe
 
 .PHONY: $(DEPS) clean
 
 clean:
-	rm -f server
+	rm -f server server.exe
